@@ -17,7 +17,7 @@ jobs:
         image: mongo:latest
         ports:
           - 27017:27017
-        options: --logpath /dev/null --bind_ip 127.0.0.1
+        options: --bind_ip 127.0.0.1  # Removed --logpath
 
     steps:
       # Step 1: Checkout the repository
