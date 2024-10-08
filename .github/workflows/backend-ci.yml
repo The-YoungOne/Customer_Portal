@@ -1,0 +1,57 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: --logpath /dev/null --bind_ip 127.0.0.1
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Step 3: Install backend dependencies
+      - name: Install backend dependencies
+        working-directory: ./Customer_portal/Customer_portal/backend
+        run: npm install
+
+      # Step 4: Set up the environment variables for the backend
+      - name: Set up environment variables
+        run: |
+          echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./Customer_portal/Customer_portal/backend/.env
+          echo "JWT_SECRET=supersecretjwtkey12345" >> ./Customer_portal/Customer_portal/backend/.env
+
+      # Step 5: Run backend tests
+      - name: Run backend tests
+        working-directory: ./Customer_portal/Customer_portal/backend
+        run: npm test
+
+      # Step 6: (Optional) Build backend
+      - name: Build backend
+        working-directory: ./Customer_portal/Customer_portal/backend
+        run: npm run build
+
+      # Step 7: (Optional) Start backend server
+      - name: Start backend server
+        working-directory: ./Customer_portal/Customer_portal/backend
+        run: node server.js
