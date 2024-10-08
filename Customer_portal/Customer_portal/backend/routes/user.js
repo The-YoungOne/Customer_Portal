@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User'); //  this is the User model
+const Payment = require('../models/Payment'); 
 const authenticateToken = require('../middleware/authenticateToken'); // Import the middleware
 
 // Helper function for standardized error responses
@@ -99,13 +100,39 @@ router.get('/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Fetch user transactions
-router.get('/transactions', authenticateToken, async (req, res) => {
+// Fetch user payments (rename from transactions)
+router.get('/payments', authenticateToken, async (req, res) => {
   try {
-    const transactions = await Transaction.find({ userId: req.user.id }).sort({ date: -1 });
-    res.json(transactions); // Return an empty array if no transactions exist
+    const payments = await Payment.find({ userId: req.user.id }).sort({ date: -1 });
+    res.json(payments); // Return an empty array if no payments exist
   } catch (error) {
-    console.error('Error fetching transactions:', error);
+    console.error('Error fetching payments:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// POST /api/payments - Save a new payment
+router.post('/payments', authenticateToken, async (req, res) => {
+  const { amount, currency, beneficiaryName, paymentReference } = req.body;
+
+  if (!amount || !currency || !beneficiaryName || !paymentReference) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  try {
+    const newPayment = new Payment({
+      userId: req.user.id,
+      amount,
+      currency,
+      beneficiaryName,
+      paymentReference,
+    });
+
+    await newPayment.save();
+    res.status(201).json({ message: 'Payment successful', payment: newPayment });
+  } catch (error) {
+    console.error('Error saving payment:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

@@ -1,8 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Confirmation = () => {
   const navigate = useNavigate();
+  const [userName, setUserName] = useState(''); // State to store user's name
+
+  useEffect(() => {
+    const token = localStorage.getItem('jwtToken'); // Get the token from localStorage
+
+    // Fetch user profile using the token
+    axios.get('https://localhost:5000/api/user/profile', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(response => {
+      setUserName(response.data.name); // Set the user's name
+    })
+    .catch(error => {
+      console.error('Error fetching user profile:', error);
+    });
+  }, []);
 
   // Function to navigate to Transactions page
   const handleReturn = () => {
@@ -19,7 +36,7 @@ const Confirmation = () => {
         </div>
         
         <div className="bg-purple-100 rounded-lg p-4 mb-6">
-          <h2 className="text-lg font-semibold text-purple-900 mb-2">Hi Lucian,</h2>
+          <h2 className="text-lg font-semibold text-purple-900 mb-2">Hi {userName},</h2> {/* Display user's name */}
           <p className="text-purple-700">
             We have received your payment and it is currently undergoing verification from our administrators.
           </p>

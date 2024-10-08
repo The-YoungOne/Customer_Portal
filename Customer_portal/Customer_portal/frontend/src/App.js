@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Home from './components/Home'; // Import the Home component
-import Register from './components/Register'; // Import the Register component
-import Login from './components/Login'; // Import the Login component
-import Transactions from './components/Transactions'; // Import the Transactions component
-import axios from 'axios';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Import Router, Route, Routes
+import Navbar from './components/Navbar'; // Ensure Navbar is correctly imported
+import Home from './components/Home'; // Ensure Home is correctly imported
+import Register from './components/Register'; // Ensure Register is correctly imported
+import Login from './components/Login'; // Ensure Login is correctly imported
+import Transactions from './components/Transactions'; // Ensure Transactions is correctly imported
+import Payment from './components/Payment'; // Ensure Payment is correctly imported
+import Confirmation from './components/Confirmation'; // Ensure Confirmation is correctly imported
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
           <Route path="/login" element={<Login />} /> {/* Login page */}
           <Route path="/register" element={<Register />} /> {/* Register page */}
           <Route path="/transactions" element={<Transactions />} /> {/* Transactions page */}
+          <Route path="/payment" element={<Payment />} /> {/* Payment page */}
+          <Route path="/confirmation" element={<Confirmation />} /> {/* Confirmation page */}
         </Routes>
       </div>
     </Router>

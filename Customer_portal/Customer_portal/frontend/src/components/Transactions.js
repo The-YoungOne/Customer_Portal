@@ -3,18 +3,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Clock, DollarSign } from 'lucide-react'; // Ensure lucide-react is installed
 
-// Mock transaction data (replace this with actual data from your backend later)
-const mockTransactions = [
-  { id: 1, description: 'Coffee Shop', amount: -4.50, date: '2024-10-08' },
-  { id: 2, description: 'Salary Deposit', amount: 2500.00, date: '2024-10-07' },
-  { id: 3, description: 'Grocery Store', amount: -65.75, date: '2024-10-06' },
-  { id: 4, description: 'Gas Station', amount: -40.00, date: '2024-10-05' },
-  { id: 5, description: 'Online Shopping', amount: -129.99, date: '2024-10-04' },
-];
-
 const Transactions = () => {
   const [userProfile, setUserProfile] = useState(null);
-  const [transactions, setTransactions] = useState(mockTransactions); // Mocking transactions for now
+  const [transactions, setTransactions] = useState([]); // Will hold the payments fetched from backend
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -31,7 +22,7 @@ const Transactions = () => {
 
     // Fetch user profile
     axios.get('https://localhost:5000/api/user/profile', {
-      headers: { Authorization: `Bearer ${token}` } // Check token format
+      headers: { Authorization: `Bearer ${token}` } // Send the token in Authorization header
     })
     .then((response) => {
       console.log('Profile Data:', response.data); // Log profile data
@@ -47,6 +38,19 @@ const Transactions = () => {
       }
       setError('Error fetching user profile.');
       navigate('/login'); // Redirect to login if there's an error
+    });
+
+    // Fetch user payments
+    axios.get('https://localhost:5000/api/user/payments', {
+      headers: { Authorization: `Bearer ${token}` } // Send the token in Authorization header
+    })
+    .then((response) => {
+      console.log('Payments Data:', response.data); // Log the payments data
+      setTransactions(response.data); // Set the fetched transactions
+    })
+    .catch((error) => {
+      console.error('Error fetching payments:', error);
+      setError('Error fetching payments.');
     })
     .finally(() => {
       setLoading(false); // End loading state
@@ -55,6 +59,11 @@ const Transactions = () => {
 
   if (loading) return <p>Loading...</p>; // Show loading state
   if (error) return <p className="text-red-600">{error}</p>; // Show error
+
+  // Function to handle navigation to Payment.js
+  const handlePayment = () => {
+    navigate('/payment');
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -74,25 +83,37 @@ const Transactions = () => {
           <Clock className="mr-2" />
           <h2 className="text-xl font-semibold">Transaction History</h2>
         </div>
-        <div className="overflow-y-auto h-[400px] pr-4">
-          {transactions.map(transaction => (
-            <div key={transaction.id} className="flex items-center justify-between py-4 border-b last:border-0">
-              <div>
-                <p className="font-medium">{transaction.description}</p>
-                <p className="text-sm text-gray-500">{transaction.date}</p>
+
+        {/* Display transactions or a message if no payments */}
+        {transactions.length > 0 ? (
+          <div className="overflow-y-auto h-[400px] pr-4">
+            {transactions.map(transaction => (
+              <div key={transaction._id} className="flex flex-col py-4 border-b last:border-0">
+                <div>
+                  <p className="font-medium"><strong>Beneficiary:</strong> {transaction.beneficiaryName}</p>
+                  <p className="text-sm text-gray-500"><strong>Reference:</strong> {transaction.paymentReference}</p>
+                  <p className="text-sm text-gray-500"><strong>Date:</strong> {new Date(transaction.date).toLocaleDateString()}</p>
+                  <p className="text-sm text-gray-500"><strong>Status:</strong> Pending</p> {/* New Status field */}
+                </div>
+                <div className="text-right mt-2">
+                  <span className="font-semibold text-red-600">
+                    -{transaction.currency} {Math.abs(transaction.amount).toFixed(2)}
+                  </span>
+                </div>
               </div>
-              <span className={`font-semibold ${transaction.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                ${Math.abs(transaction.amount).toFixed(2)}
-              </span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center">No payments have been made yet.</p>
+        )}
       </div>
 
       {/* Payment Button */}
       <div className="flex justify-center">
-        <button className="bg-blue-500 text-white px-6 py-3 rounded-lg flex items-center">
-          <DollarSign className="mr-2 h-4 w-4" />
+        <button 
+          onClick={handlePayment} // Navigate to Payment.js on click
+          className="bg-purple-600 text-white px-8 py-3 rounded-lg flex items-center hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        >
           Pay Now
         </button>
       </div>
