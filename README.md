@@ -2,7 +2,7 @@
 
 Welcome to the **International Payment System**. This system allows customers to register and securely make international payments, while providing bank employees with the tools to monitor and verify transactions. The project has been developed by **The Risk Rangers** team.
 
-click the link below to view a video demonstration of the application:
+click the link to view a video demonstration of the application:
 https://youtu.be/rpVu8z6tO5c
 
 ## **Project Overview**
