@@ -73,7 +73,8 @@ Open your server.js file and make sure it's configured to use the SSL certificat
 ```bash
 javascript const https = require('https'); const fs = require('fs');
 
-const sslOptions = { key: fs.readFileSync('keys/privatekey.pem'), // Path to your private key cert: fs.readFileSync('keys/server.crt') // Path to your certificate };
+const sslOptions = { key: fs.readFileSync('keys/privatekey.pem'), // Path to your private key cert:
+fs.readFileSync('keys/server.crt') // Path to your certificate };
 
 https.createServer(sslOptions, app).listen(5000, () => { console.log('Secure server running on port 5000'); });
 ```
