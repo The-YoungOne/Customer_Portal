@@ -37,6 +37,66 @@ git clone https://github.com/your-repo/international-payment-system.git
 cd international-payment-system
 ```
 
+Setting Up SSL for Local Development
+To enable HTTPS for your local development environment, you'll need to generate SSL certificates and configure your server to use them. Follow these steps to set up your own SSL keys and configure them in the project:
+
+1. Generate SSL Keys
+You can generate SSL keys locally using OpenSSL. If you don't have OpenSSL installed, you can download it here.
+
+Run the following commands to generate the required SSL key and certificate files:
+
+bash
+Copy code
+# Generate a private key
+openssl genrsa -out privatekey.pem 2048
+
+# Generate a certificate signing request (CSR)
+openssl req -new -key privatekey.pem -out csr.pem
+
+# Generate a self-signed certificate
+openssl x509 -req -days 365 -in csr.pem -signkey privatekey.pem -out server.crt
+2. Move the Keys to the Keys Folder
+Once you’ve generated the keys, move them to the appropriate folder in your project. Typically, these files should go into a folder called keys within your project directory:
+
+perl
+Copy code
+/Customer_Portal
+  ├── backend
+  ├── frontend
+  ├── keys
+      ├── privatekey.pem
+      ├── server.crt
+Ensure that both the privatekey.pem and server.crt files are inside the keys folder.
+
+3. Update the Server Configuration
+Next, ensure that your server.js file is correctly configured to use the SSL certificates. Open the server.js file and verify the following section:
+
+javascript
+Copy code
+const https = require('https');
+const fs = require('fs');
+const sslOptions = {
+  key: fs.readFileSync('keys/privatekey.pem'),  // Path to your private key
+  cert: fs.readFileSync('keys/server.crt')      // Path to your certificate
+};
+
+// Start the HTTPS server
+https.createServer(sslOptions, app).listen(5000, () => {
+  console.log('Secure server running on port 5000');
+});
+Ensure that the paths to your privatekey.pem and server.crt files are correct and point to the keys folder.
+
+4. Verify HTTPS is Working
+To verify that HTTPS is working, start your server by running:
+
+bash
+Copy code
+node server.js
+In your browser, navigate to https://localhost:5000. You should see a security warning since the certificate is self-signed, but this is expected in local development. You can safely proceed to view your application over HTTPS.
+
+
+
+
 ### **Backend Setup**
 
 1. **Install Dependencies**
@@ -48,18 +108,23 @@ cd international-payment-system
 2. **Create `.env` File**
    Create a `.env` file in the `backend/` directory and add the following environment variables:
    ```bash
-   MONGO_URI=mongodb+srv://your_username:your_password@cluster0.mongodb.net/yourDatabase?retryWrites=true&w=majority
-   JWT_SECRET=your_jwt_secret
-   SSL_KEY_PATH=D:/Downloads/Customer_portal/privatekey.pem
-   SSL_CERT_PATH=D:/Downloads/Customer_portal/server.crt
+   MONGO_URI=mongodb+srv://lubertyoung:lucian5y@customer-portal.jjyzu.mongodb.net/?retryWrites=true&w=majority&appName=Customer-Portal
+    JWT_SECRET=supersecretjwtkey12345
+
+    HTTPS=true
+    SSL_CRT_FILE=D:/Downloads/Customer_portal/server.crt
+    SSL_KEY_FILE=D:/Downloads/Customer_portal/privatekey.pem
+    REACT_APP_EXCHANGE_API_KEY=f94f4079a907ed37eb70b4b9
    ```
 
 3. **Run the Server**
     Start the backend server:
     ```bash
     nodemon server.js
+    or
+    node server.js
     ```
-    The backend server will run on **https://localhost** (port 443 for HTTPS).
+    The backend server will run on **https://localhost** (port 5000 for HTTPS).
 
 ### **Frontend Setup**
 
@@ -73,11 +138,19 @@ cd international-payment-system
     npm install
     ```
 
-3. **Run the Frontend**
+3. **Create `.env` File**
+   Create a `.env` file in the `frontend/` directory and add the following environment variables:
+   ```bash
+   REACT_APP_EXCHANGE_API_KEY=f94f4079a907ed37eb70b4b9
+    JWT_SECRET=supersecretjwtkey12345
+
+   ```
+
+4. **Run the Frontend**
     ```bash
     npm start
     ```
-    The frontend will be available at **http://localhost:3000**. Make sure the backend is running to handle API requests.
+    The frontend will be available at **http://localhost:5000**. Make sure the backend is running to handle API requests.
 
 ---
 
@@ -124,32 +197,32 @@ cd international-payment-system
 - The backend has protected routes that require a valid JWT token for access.
 - Unauthorized users will be redirected to log in.
 
+- ### **6. Customer Transaction History**
+- Implement a feature where customers can view their past transactions.
+- Store transaction details securely in the MongoDB database.
+
 ---
 
 ## **Upcoming Features**
 
 ### **Task 3 - Next Developments**
-
-1. **Customer Transaction History**
-   - Implement a feature where customers can view their past transactions.
-   - Store transaction details securely in the MongoDB database.
    
-2. **Employee Verification System**
+1. **Employee Verification System**
    - Develop a dashboard for bank employees to verify SWIFT code and account information before forwarding to SWIFT.
    - Add the ability for employees to mark payments as "Verified" and submit them.
 
-3. **Notification System**
+2. **Notification System**
    - Add an email notification system to notify customers when their payments have been successfully processed.
 
-4. **User Profile Management**
+3. **User Profile Management**
    - Customers will be able to update their account information (e.g., name, password).
    - Ensure password encryption and strong validation for profile updates.
 
-5. **Enhanced Security**
+4. **Enhanced Security**
    - Implement additional layers of security (e.g., Two-Factor Authentication) for both customers and employees.
    - Review and enhance the encryption mechanism for sensitive data like account numbers.
 
-6. **Data Analytics and Reporting**
+5. **Data Analytics and Reporting**
    - Add reporting tools for bank employees to generate reports based on payments processed.
    - Use data visualization tools like `recharts` to provide insights into the volume of payments processed over time.
 
