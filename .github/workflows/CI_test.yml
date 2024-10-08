@@ -25,7 +25,7 @@ jobs:
     
    
     - name: Change to frontend directory
-      run: cd Customer_portal
+      run: cd Customer_portal/Customer_portal
 
     # Install dependencies
     - name: Install dependencies
