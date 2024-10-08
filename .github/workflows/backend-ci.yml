@@ -28,21 +28,20 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '16'  # Specify Node.js version
+          node-version: '16'
           cache: npm
 
-      # Step 3: Install backend dependencies
-      - name: Install backend dependencies
-        working-directory: ./Customer_portal/Customer_portal/backend
+      # Step 3: Install root dependencies (including backend and frontend)
+      - name: Install root dependencies
         run: npm install
 
       # Step 4: Set up the environment variables for the backend
       - name: Set up environment variables
         run: |
-          echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./Customer_portal/Customer_portal/backend/.env
-          echo "JWT_SECRET=supersecretjwtkey12345" >> ./Customer_portal/Customer_portal/backend/.env
+          echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./backend/.env
+          echo "JWT_SECRET=supersecretjwtkey12345" >> ./backend/.env
 
-      # Step 5: Run backend tests
+      # Step 5: Run backend-specific tasks
       - name: Run backend tests
-        working-directory: ./Customer_portal/Customer_portal/backend
+        working-directory: ./backend  # Navigate to the backend folder
         run: npm test
