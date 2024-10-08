@@ -45,30 +45,38 @@ cd international-payment-system
    
 Setting Up SSL for Local Development
 Generate SSL Keys
-You can generate SSL keys locally using OpenSSL. If you don’t have OpenSSL installed, you can download it here.
+You can generate SSL keys locally using mkcert.
 
-Run the following commands to generate the required SSL key and certificate files: ```bash
+Run the following commands to generate the required SSL key and certificate files in your command prompt, with the directory to the keys folder: 
+```bash
 
-Generate a private key
-openssl genrsa -out privatekey.pem 2048
+Install mkcert on Windows
+choco install mkcert
 
-Generate a certificate signing request (CSR)
-openssl req -new -key privatekey.pem -out csr.pem
+Sign the certificates
+mkcert -install
 
-Generate a self-signed certificate
-openssl x509 -req -days 365 -in csr.pem -signkey privatekey.pem -out server.crt ```
+Generate the local certificate for localost
+mkcert localhost 127.0.0.1 ::1
+```
 
 Move the Keys to the Keys Folder
-Once you’ve generated the keys, move them to the appropriate folder in your project. Typically, these files should go into a folder called keys within your project directory: ```bash /Customer_Portal ├── backend ├── frontend ├── keys ├── privatekey.pem ├── server.crt ```
+Once you’ve generated the keys, move them to the appropriate folder in your project.: 
+```bash 
+/Customer_Portal ├── backend ├── frontend ├── keys ├── privatekey.pem ├── server.crt
+```
 
 Ensure that both the privatekey.pem and server.crt files are inside the keys folder.
 
-Update the Server Configuration
-Open your server.js file and make sure it's configured to use the SSL certificates by verifying the following code: ```javascript const https = require('https'); const fs = require('fs');
+Lastly, update the Server Configuration
+Open your server.js file and make sure it's configured to use the SSL certificates by verifying the following code: 
+```bash
+javascript const https = require('https'); const fs = require('fs');
 
 const sslOptions = { key: fs.readFileSync('keys/privatekey.pem'), // Path to your private key cert: fs.readFileSync('keys/server.crt') // Path to your certificate };
 
-https.createServer(sslOptions, app).listen(5000, () => { console.log('Secure server running on port 5000'); }); ```
+https.createServer(sslOptions, app).listen(5000, () => { console.log('Secure server running on port 5000'); });
+```
 
 Ensure that the paths to your privatekey.pem and server.crt files are correct and point to the keys folder.
 
