@@ -26,7 +26,7 @@ jobs:
 
     # Move to the correct frontend directory
     - name: Change to frontend directory
-      working-directory: Customer_portal/Customer_portal/frontend  # Correct path to frontend
+      working-directory: Customer_portal
       run: pwd  # Just checking the current directory for confirmation
 
     # Install dependencies (uses the correct working directory)
