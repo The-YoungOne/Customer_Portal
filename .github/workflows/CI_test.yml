@@ -1,0 +1,67 @@
+name: Customer_Portal CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: --logpath /dev/null --bind_ip 127.0.0.1
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js (for frontend/backend)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Use the Node version your project requires
+
+      # Step 3: Install backend dependencies
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
+
+      # Step 4: Set up the .env file for backend
+      - name: Set up backend environment variables
+        run: |
+          echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./backend/.env
+          echo "JWT_SECRET=supersecretjwtkey12345" >> ./backend/.env
+
+      # Step 5: Install frontend dependencies
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      # Step 6: Run backend tests (if any)
+      - name: Run backend tests
+        working-directory: ./backend
+        run: npm test
+
+      # Step 7: Run frontend tests (if any)
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm test
+
+      # Step 8: Run linter checks (optional)
+      - name: Run ESLint checks
+        working-directory: ./frontend
+        run: npm run lint
+
+      # Step 9: Build frontend (optional, but recommended)
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
