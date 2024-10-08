@@ -31,17 +31,23 @@ jobs:
           node-version: '16'
           cache: npm
 
-      # Step 3: Install dependencies from the root
-      - name: Install dependencies
+      # Step 3: Install backend dependencies
+      - name: Install backend dependencies
+        working-directory: ./backend  # Install backend dependencies
         run: npm install
 
-      # Step 4: Set up environment variables for the backend
+      # Step 4: Install frontend dependencies
+      - name: Install frontend dependencies
+        working-directory: ./frontend  # Install frontend dependencies
+        run: npm install
+
+      # Step 5: Set up environment variables for the backend
       - name: Set up environment variables
         run: |
           echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./backend/.env
           echo "JWT_SECRET=supersecretjwtkey12345" >> ./backend/.env
 
-      # Step 5: Run backend tests
+      # Step 6: Run backend tests
       - name: Run backend tests
-        working-directory: ./backend
+        working-directory: ./backend  # Navigate to the backend folder
         run: npm test
