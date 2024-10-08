@@ -37,64 +37,47 @@ git clone https://github.com/your-repo/international-payment-system.git
 cd international-payment-system
 ```
 
+### **Setting Up SSL for Local Development**
+
+1. **Generate SSL Keys**  
+   You can generate SSL keys locally using **OpenSSL**. If you don’t have OpenSSL installed, you can [download it here](https://www.openssl.org/).
+
+   
 Setting Up SSL for Local Development
-To enable HTTPS for your local development environment, you'll need to generate SSL certificates and configure your server to use them. Follow these steps to set up your own SSL keys and configure them in the project:
+Generate SSL Keys
+You can generate SSL keys locally using OpenSSL. If you don’t have OpenSSL installed, you can download it here.
 
-1. Generate SSL Keys
-You can generate SSL keys locally using OpenSSL. If you don't have OpenSSL installed, you can download it here.
+Run the following commands to generate the required SSL key and certificate files: ```bash
 
-Run the following commands to generate the required SSL key and certificate files:
-
-bash
-Copy code
-# Generate a private key
+Generate a private key
 openssl genrsa -out privatekey.pem 2048
 
-# Generate a certificate signing request (CSR)
+Generate a certificate signing request (CSR)
 openssl req -new -key privatekey.pem -out csr.pem
 
-# Generate a self-signed certificate
-openssl x509 -req -days 365 -in csr.pem -signkey privatekey.pem -out server.crt
-2. Move the Keys to the Keys Folder
-Once you’ve generated the keys, move them to the appropriate folder in your project. Typically, these files should go into a folder called keys within your project directory:
+Generate a self-signed certificate
+openssl x509 -req -days 365 -in csr.pem -signkey privatekey.pem -out server.crt ```
 
-perl
-Copy code
-/Customer_Portal
-  ├── backend
-  ├── frontend
-  ├── keys
-      ├── privatekey.pem
-      ├── server.crt
+Move the Keys to the Keys Folder
+Once you’ve generated the keys, move them to the appropriate folder in your project. Typically, these files should go into a folder called keys within your project directory: ```bash /Customer_Portal ├── backend ├── frontend ├── keys ├── privatekey.pem ├── server.crt ```
+
 Ensure that both the privatekey.pem and server.crt files are inside the keys folder.
 
-3. Update the Server Configuration
-Next, ensure that your server.js file is correctly configured to use the SSL certificates. Open the server.js file and verify the following section:
+Update the Server Configuration
+Open your server.js file and make sure it's configured to use the SSL certificates by verifying the following code: ```javascript const https = require('https'); const fs = require('fs');
 
-javascript
-Copy code
-const https = require('https');
-const fs = require('fs');
-const sslOptions = {
-  key: fs.readFileSync('keys/privatekey.pem'),  // Path to your private key
-  cert: fs.readFileSync('keys/server.crt')      // Path to your certificate
-};
+const sslOptions = { key: fs.readFileSync('keys/privatekey.pem'), // Path to your private key cert: fs.readFileSync('keys/server.crt') // Path to your certificate };
 
-// Start the HTTPS server
-https.createServer(sslOptions, app).listen(5000, () => {
-  console.log('Secure server running on port 5000');
-});
+https.createServer(sslOptions, app).listen(5000, () => { console.log('Secure server running on port 5000'); }); ```
+
 Ensure that the paths to your privatekey.pem and server.crt files are correct and point to the keys folder.
 
-4. Verify HTTPS is Working
-To verify that HTTPS is working, start your server by running:
+Verify HTTPS is Working
+To verify that HTTPS is working, start your server by running: ```bash node server.js ```
 
-bash
-Copy code
-node server.js
-In your browser, navigate to https://localhost:5000. You should see a security warning since the certificate is self-signed, but this is expected in local development. You can safely proceed to view your application over HTTPS.
+In your browser, navigate to: ```bash https://localhost:5000 ```
 
-
+You should see a security warning since the certificate is self-signed, but this is expected in local development. You can safely proceed to view your application over HTTPS.
 
 
 ### **Backend Setup**
