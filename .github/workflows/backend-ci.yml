@@ -17,7 +17,7 @@ jobs:
         image: mongo:latest
         ports:
           - 27017:27017
-        options: --bind_ip 127.0.0.1
+        options: --bind_ip_all
 
     steps:
       # Step 1: Checkout the repository
@@ -33,21 +33,16 @@ jobs:
 
       # Step 3: Install backend dependencies
       - name: Install backend dependencies
-        working-directory: ./backend  # Install backend dependencies
+        working-directory: ./backend  # Ensure correct path
         run: npm install
 
-      # Step 4: Install frontend dependencies
-      - name: Install frontend dependencies
-        working-directory: ./frontend  # Install frontend dependencies
-        run: npm install
-
-      # Step 5: Set up environment variables for the backend
+      # Step 4: Set up environment variables for the backend
       - name: Set up environment variables
         run: |
           echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./backend/.env
           echo "JWT_SECRET=supersecretjwtkey12345" >> ./backend/.env
 
-      # Step 6: Run backend tests
+      # Step 5: Run backend tests to verify MongoDB connection
       - name: Run backend tests
-        working-directory: ./backend  # Navigate to the backend folder
+        working-directory: ./backend  # Ensure correct path
         run: npm test
