@@ -1,6 +1,13 @@
 name: Backend CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   test:
@@ -8,14 +15,14 @@ jobs:
 
     services:
       mongo:
-        image: mongo:5.0
+        image: mongo:latest
+        ports:
+          - 27017:27017
         options: >-
           --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 27017:27017
 
     steps:
       - name: Checkout code
@@ -27,12 +34,12 @@ jobs:
           node-version: '20.x'
 
       - name: Install dependencies
-        working-directory: ./Customer_portal/Customer_portal/backend # Adjust path
+        working-directory: ./Customer_portal
         run: npm install
 
       - name: Set environment variables
-        run: echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./Customer_portal/Customer_portal/backend/.env
+        run: echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./Customer_portal/.env
 
       - name: Run tests
-        working-directory: ./Customer_portal/Customer_portal/backend # Adjust path
+        working-directory: ./Customer_portal
         run: npm test
