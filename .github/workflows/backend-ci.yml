@@ -18,38 +18,33 @@ jobs:
         ports:
           - 27017:27017
         options: > 
-          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'" 
-          --health-interval 10s 
-          --health-timeout 5s 
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 5
         env:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: example
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '16'
           cache: npm
 
-      # Step 3: Install backend dependencies
       - name: Install backend dependencies
-        working-directory: ./backend  # Ensure correct path
+        working-directory: ./backend
         run: npm install
 
-      # Step 4: Set up environment variables for the backend
       - name: Set up environment variables
         run: |
           echo "MONGO_URI=mongodb://root:example@localhost:27017/testdb?authSource=admin" >> ./backend/.env
           echo "JWT_SECRET=supersecretjwtkey12345" >> ./backend/.env
 
-      # Step 5: Run backend tests to verify MongoDB connection
       - name: Run backend tests
-        working-directory: ./backend  # Ensure correct path
+        working-directory: ./backend
         run: npm test
