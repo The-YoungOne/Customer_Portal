@@ -17,13 +17,12 @@ jobs:
         image: mongo:latest
         ports:
           - 27017:27017
-        # Use the options field to specify MongoDB startup options
         options: > 
           --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'" 
           --health-interval 10s 
           --health-timeout 5s 
           --health-retries 5 
-          --entrypoint "mongod" -- --bind_ip_all
+          --entrypoint "mongod" --bind_ip_all
 
     steps:
       # Step 1: Checkout the repository
