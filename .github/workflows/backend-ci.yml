@@ -22,7 +22,9 @@ jobs:
           --health-interval 10s 
           --health-timeout 5s 
           --health-retries 5
-          --entrypoint mongod -- --bind_ip_all
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: example
 
     steps:
       # Step 1: Checkout the repository
@@ -44,7 +46,7 @@ jobs:
       # Step 4: Set up environment variables for the backend
       - name: Set up environment variables
         run: |
-          echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./backend/.env
+          echo "MONGO_URI=mongodb://root:example@localhost:27017/testdb?authSource=admin" >> ./backend/.env
           echo "JWT_SECRET=supersecretjwtkey12345" >> ./backend/.env
 
       # Step 5: Run backend tests to verify MongoDB connection
