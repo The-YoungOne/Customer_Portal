@@ -11,12 +11,6 @@ jobs:
         image: mongo:latest
         ports:
           - 27017:27017
-        options: >-
-          --health-cmd "mongo --eval 'db.adminCommand({ ping: 1 })'"
-          --health-interval 30s
-          --health-timeout 90s
-          --health-retries 30
-          --memory 1g
 
     steps:
       - name: Checkout code
@@ -37,7 +31,3 @@ jobs:
       - name: Run tests
         working-directory: ./Customer_portal
         run: npm test
-
-      - name: MongoDB Logs
-        if: failure()
-        run: docker logs $(docker ps -q --filter name=mongo)
