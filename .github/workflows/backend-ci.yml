@@ -13,9 +13,9 @@ jobs:
           - 27017:27017
         options: >-
           --health-cmd "mongo --eval 'db.adminCommand({ ping: 1 })'"
-          --health-interval 10s
-          --health-timeout 10s
-          --health-retries 10
+          --health-interval 30s
+          --health-timeout 20s
+          --health-retries 15
 
     steps:
       - name: Checkout code
