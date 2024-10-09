@@ -27,16 +27,12 @@ jobs:
           node-version: '20.x'
 
       - name: Install dependencies
-        working-directory: ./backend  # Ensure this path is correct
+        working-directory: ./Customer_portal/Customer_portal/backend # Adjust path
         run: npm install
 
       - name: Set environment variables
-        run: echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./backend/.env
-
-      - name: Print Mongo logs
-        if: failure()
-        run: docker logs $(docker ps -aqf "name=mongo")
+        run: echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./Customer_portal/Customer_portal/backend/.env
 
       - name: Run tests
-        working-directory: ./backend
+        working-directory: ./Customer_portal/Customer_portal/backend # Adjust path
         run: npm test
