@@ -1,12 +1,6 @@
 name: Backend CI
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
   test:
@@ -17,29 +11,29 @@ jobs:
         image: mongo:latest
         ports:
           - 27017:27017
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: example
+        options: >-
+          --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: npm
+          node-version: '20.x'
+          cache: 'npm'
 
-      - name: Install backend dependencies
-        working-directory: ./backend
+      - name: Install dependencies
         run: npm install
+        working-directory: ./Customer_portal/backend
 
-      - name: Set up environment variables
-        run: |
-          echo "MONGO_URI=mongodb://root:example@localhost:27017/testdb?authSource=admin" >> ./backend/.env
-          echo "JWT_SECRET=supersecretjwtkey12345" >> ./backend/.env
+      - name: Set environment variables
+        run: echo "MONGO_URI=mongodb://localhost:27017/testdb" >> ./Customer_portal/backend/.env
 
-      - name: Run backend tests
-        working-directory: ./backend
+      - name: Run tests
         run: npm test
+        working-directory: ./Customer_portal/backend
