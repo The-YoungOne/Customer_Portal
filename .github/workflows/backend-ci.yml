@@ -1,13 +1,6 @@
 name: Backend CI
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch: # Allows manual triggering
+on: [push, pull_request]
 
 jobs:
   test:
@@ -43,3 +36,7 @@ jobs:
       - name: Run tests
         working-directory: ./Customer_portal
         run: npm test
+
+      - name: MongoDB Logs
+        if: failure()
+        run: docker logs mongo
