@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const paymentSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User', // Assuming a User model exists
+    ref: 'User',
     required: true,
   },
   amount: {
@@ -22,6 +22,19 @@ const paymentSchema = new Schema({
   },
   paymentReference: {
     type: String,
+  },
+  recipientAccountNumber: { 
+    type: String,
+    required: true,
+  },
+  userAccountNumber: {
+    type: String,
+    required: true,
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'approved', 'denied'], 
+    default: 'pending' 
   },
   date: {
     type: Date,

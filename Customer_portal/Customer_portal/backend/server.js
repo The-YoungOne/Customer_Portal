@@ -8,7 +8,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
-const userRoutes = require('./routes/user');
+const {router: userRoutes, seedDefaultAdmin} = require('./routes/user');
 
 dotenv.config();
 const app = express();
@@ -25,7 +25,10 @@ app.use((req, res, next) => {
 // MongoDB Connection with error handling
 try {
   mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB connected'))
+    .then(() => {
+      console.log('MongoDB connected');
+      seedDefaultAdmin(); //Ensures default admin is created
+    })
     .catch(err => console.error('MongoDB connection error:', err));
 } catch (error) {
   console.error('Unexpected error while connecting to MongoDB:', error);
