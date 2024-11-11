@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api'; // Import the custom axios instance
 
 const Payment = () => {
-  const [amount, setAmount] = useState(''); 
-  const [currency, setCurrency] = useState('ZAR'); 
+  const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState('ZAR');
+  const [convertedAmount, setConvertedAmount] = useState('');
   const [exchangeRates, setExchangeRates] = useState({});
-  const [beneficiaryName, setBeneficiaryName] = useState(''); 
-  const [paymentReference, setPaymentReference] = useState(''); 
-  const [recipientAccountNumber, setRecipientAccountNumber] = useState(''); 
-  const [userAccountNumber, setUserAccountNumber] = useState(''); 
+  const [beneficiaryName, setBeneficiaryName] = useState('');
+  const [paymentReference, setPaymentReference] = useState('');
+  const [recipientAccountNumber, setRecipientAccountNumber] = useState('');
+  const [userAccountNumber, setUserAccountNumber] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [formError, setFormError] = useState(''); 
+  const [formError, setFormError] = useState('');
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-  // Fetch user account number when the component mounts
   useEffect(() => {
     const fetchUserAccountNumber = async () => {
       const token = localStorage.getItem('jwtToken');
       try {
-        const response = await axios.get('https://localhost:5000/api/user/profile', {
+        const response = await api.get('/api/user/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserAccountNumber(response.data.accountNumber);
@@ -34,7 +34,6 @@ const Payment = () => {
     fetchUserAccountNumber();
   }, []);
 
-  // Fetch exchange rates when the component mounts
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
@@ -43,7 +42,7 @@ const Payment = () => {
         );
         const data = await response.json();
         if (data.result === 'success') {
-          setExchangeRates(data.conversion_rates); 
+          setExchangeRates(data.conversion_rates);
           setLoading(false);
         } else {
           throw new Error('Failed to fetch exchange rates');
@@ -57,27 +56,24 @@ const Payment = () => {
     fetchExchangeRates();
   }, []);
 
-  // Handle currency change
   const handleCurrencyChange = (e) => {
     const newCurrency = e.target.value;
     setCurrency(newCurrency);
-    updateConvertedAmount(amount, newCurrency); 
+    updateConvertedAmount(amount, newCurrency);
   };
 
-  // Handle amount input change and update the state
   const handleAmountChange = (e) => {
     const newAmount = e.target.value;
-    updateConvertedAmount(newAmount, currency); 
+    setAmount(newAmount);
+    updateConvertedAmount(newAmount, currency);
   };
 
-  // Convert and update the amount
   const updateConvertedAmount = (amount, selectedCurrency) => {
-    const rate = exchangeRates[selectedCurrency] || 1; 
-    const converted = (amount * rate).toFixed(2); 
-    setAmount(converted); 
+    const rate = exchangeRates[selectedCurrency] || 1;
+    const converted = (amount * rate).toFixed(2);
+    setConvertedAmount(converted);
   };
 
-  // Form validation
   const validateForm = () => {
     if (!amount || !currency || !beneficiaryName || !paymentReference || !recipientAccountNumber) {
       setFormError('All fields are required.');
@@ -86,7 +82,6 @@ const Payment = () => {
     return true;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError('');
@@ -95,8 +90,8 @@ const Payment = () => {
 
     const token = localStorage.getItem('jwtToken');
     try {
-      const response = await axios.post(
-        'https://localhost:5000/api/user/payments', // Correct API endpoint
+      const response = await api.post(
+        '/api/user/payments',
         {
           amount,
           currency,
@@ -133,7 +128,7 @@ const Payment = () => {
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Payment Details</h1>
 
-        {formError && <p className="text-red-600 mb-4">{formError}</p>} 
+        {formError && <p className="text-red-600 mb-4">{formError}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex space-x-4">
@@ -144,7 +139,7 @@ const Payment = () => {
                 id="amount" 
                 name="amount"
                 value={amount}
-                onChange={handleAmountChange} 
+                onChange={handleAmountChange}
                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 required 
                 step="0.01" 
@@ -159,7 +154,7 @@ const Payment = () => {
                 name="currency"
                 value={currency}
                 onChange={handleCurrencyChange} 
-                className="custom-select mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
                 {Object.keys(exchangeRates).map((currencyOption) => (
                   <option key={currencyOption} value={currencyOption}>

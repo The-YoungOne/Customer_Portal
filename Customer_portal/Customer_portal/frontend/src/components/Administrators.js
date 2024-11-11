@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'; // Import the custom api instance
 import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -17,9 +17,7 @@ const AdminDashboard = () => {
     const fetchAdmins = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('https://localhost:5000/api/user/admins', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
-        });
+        const response = await api.get('/api/user/admins'); // Using api.get
         setAdmins(response.data);
       } catch (error) {
         setError('Failed to fetch admins. Please try again.');
@@ -44,9 +42,7 @@ const AdminDashboard = () => {
     }
     try {
       setIsLoading(true);
-      const response = await axios.post('https://localhost:5000/api/user/admins', newAdmin, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
-      });
+      const response = await api.post('/api/user/admins', newAdmin); // Using api.post
       setAdmins([...admins, response.data.admin]);
       setNewAdmin({ name: '', idNumber: '', username: '', accountNumber: '', password: '' });
       setSubmitStatus('Admin added successfully.');
@@ -62,9 +58,7 @@ const AdminDashboard = () => {
   const handleEditAdmin = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.put(`https://localhost:5000/api/user/admins/${editAdminId}`, newAdmin, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
-      });
+      const response = await api.put(`/api/user/admins/${editAdminId}`, newAdmin); // Using api.put
       setAdmins(
         admins.map((admin) =>
           admin._id === editAdminId ? { ...admin, ...response.data.admin } : admin
@@ -94,9 +88,7 @@ const AdminDashboard = () => {
   const handleDeleteAdmin = async (adminId) => {
     try {
       setIsLoading(true);
-      await axios.delete(`https://localhost:5000/api/user/admins/${adminId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
-      });
+      await api.delete(`/api/user/admins/${adminId}`); // Using api.delete
       setAdmins(admins.filter((admin) => admin._id !== adminId));
       setSubmitStatus('Admin deleted successfully.');
     } catch (error) {

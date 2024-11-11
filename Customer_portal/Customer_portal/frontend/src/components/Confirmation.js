@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api'; // Import the custom api instance
 
 const Confirmation = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState(''); // State to store user's name
 
   useEffect(() => {
-    const token = localStorage.getItem('jwtToken'); // Get the token from localStorage
-
     // Fetch user profile using the token
-    axios.get('https://localhost:5000/api/user/profile', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(response => {
-      setUserName(response.data.name); // Set the user's name
-    })
-    .catch(error => {
-      console.error('Error fetching user profile:', error);
-    });
+    api.get('/api/user/profile') // Using api instance
+      .then(response => {
+        setUserName(response.data.name); // Set the user's name
+      })
+      .catch(error => {
+        console.error('Error fetching user profile:', error);
+      });
   }, []);
 
   // Function to navigate to Transactions page

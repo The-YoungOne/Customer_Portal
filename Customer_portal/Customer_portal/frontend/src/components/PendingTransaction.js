@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { CheckCircle, XCircle } from "lucide-react";
+import api from "../api"; // Use the custom API instance
 
 const PendingTransactions = () => {
   const [transactions, setTransactions] = useState([]); // State to store transactions
@@ -13,14 +13,11 @@ const PendingTransactions = () => {
     const fetchTransactions = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          "https://localhost:5000/api/user/transactions/pending", // Ensure the path matches your backend route
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-            },
-          }
-        );
+        const response = await api.get("/api/user/transactions/pending", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          },
+        });
         setTransactions(response.data); // Set the transactions data
       } catch (error) {
         setError("Failed to fetch transactions. Please try again.");
@@ -35,15 +32,11 @@ const PendingTransactions = () => {
   const handleApprove = async (transactionId) => {
     try {
       setIsLoading(true);
-      await axios.post(
-        `https://localhost:5000/api/user/payments/${transactionId}/approve`, // Corrected route
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-          },
-        }
-      );
+      await api.post(`/api/user/payments/${transactionId}/approve`, {}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+      });
       // Remove the approved transaction from the list
       setTransactions(transactions.filter((transaction) => transaction._id !== transactionId));
       setSubmitStatus("Transaction approved successfully.");
@@ -58,15 +51,11 @@ const PendingTransactions = () => {
   const handleDeny = async (transactionId) => {
     try {
       setIsLoading(true);
-      await axios.post(
-        `https://localhost:5000/api/user/payments/${transactionId}/deny`, // Corrected route
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-          },
-        }
-      );
+      await api.post(`/api/user/payments/${transactionId}/deny`, {}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+      });
       // Remove the denied transaction from the list
       setTransactions(transactions.filter((transaction) => transaction._id !== transactionId));
       setSubmitStatus("Transaction denied successfully.");

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'; // Import the centralized Axios instance
 import { useNavigate } from 'react-router-dom';
 import { Clock, Trash2 } from 'lucide-react';
 
 const Transactions = () => {
   const [userProfile, setUserProfile] = useState(null);
-  const [transactions, setTransactions] = useState([]); // Holds the payments fetched from the backend
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -14,47 +14,40 @@ const Transactions = () => {
     const token = localStorage.getItem('jwtToken');
 
     if (!token) {
-      navigate('/login'); // Redirect to login if the token is missing
+      navigate('/login');
       return;
     }
 
-    // Fetch user profile
-    axios.get('https://localhost:5000/api/user/profile', {
-      headers: { Authorization: `Bearer ${token}` } // Send the token in the Authorization header
-    })
-    .then((response) => {
-      setUserProfile(response.data); // Set user profile data
-    })
-    .catch((error) => {
-      setError('Error fetching user profile.');
-      navigate('/login'); // Redirect to login if there's an error
-    });
+    // Fetch user profile and payments
+    const fetchUserData = async () => {
+      try {
+        const profileResponse = await api.get('/api/user/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserProfile(profileResponse.data);
 
-    // Fetch user payments
-    axios.get('https://localhost:5000/api/user/payments', {
-      headers: { Authorization: `Bearer ${token}` } // Send the token in the Authorization header
-    })
-    .then((response) => {
-      setTransactions(response.data); // Set the fetched transactions
-    })
-    .catch((error) => {
-      setError('Error fetching payments.');
-    })
-    .finally(() => {
-      setLoading(false); // End the loading state
-    });
+        const paymentsResponse = await api.get('/api/user/payments', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTransactions(paymentsResponse.data);
+      } catch (error) {
+        setError('Error fetching user data.');
+        navigate('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
   }, [navigate]);
 
-  // Function to handle the deletion of a transaction
   const handleDelete = async (transactionId) => {
     const isConfirmed = window.confirm('Are you sure you want to cancel this transaction?');
     if (!isConfirmed) return;
 
-    const token = localStorage.getItem('jwtToken');
-    
     try {
-      await axios.delete(`https://localhost:5000/api/user/payments/${transactionId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      await api.delete(`/api/user/payments/${transactionId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("jwtToken")}` }
       });
       setTransactions(transactions.filter(transaction => transaction._id !== transactionId));
     } catch (error) {
@@ -62,59 +55,34 @@ const Transactions = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>; // Show the loading state
-  if (error) return <p className="text-red-600">{error}</p>; // Show the error
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
-  // Function to handle navigation to Payment.js
   const handlePayment = () => {
     navigate('/payment');
   };
 
-  // Function to get the appropriate text color and sign based on transaction direction
   const getTransactionStyle = (transaction) => {
-    // Ensure userProfile and account number exist
     if (!userProfile || !userProfile.accountNumber) {
-      return {
-        colorClass: 'text-gray-600', // Default color if userProfile is not available
-        sign: '' // No sign
-      };
+      return { colorClass: 'text-gray-600', sign: '' };
     }
 
-    // Check if the logged-in user is the payer or the recipient
     const isPayer = transaction.userAccountNumber === userProfile.accountNumber;
     const isRecipient = transaction.recipientAccountNumber === userProfile.accountNumber;
 
-    if (isPayer) {
-      // Outgoing payment (payer): Red and negative sign
-      return {
-        colorClass: 'text-red-600',
-        sign: '-'
-      };
-    } else if (isRecipient) {
-      // Incoming payment (recipient): Green and positive sign
-      return {
-        colorClass: 'text-green-600',
-        sign: '+'
-      };
-    }
-
-    // Default styling for undefined states
-    return {
-      colorClass: 'text-gray-600',
-      sign: ''
-    };
+    return isPayer
+      ? { colorClass: 'text-red-600', sign: '-' }
+      : isRecipient
+      ? { colorClass: 'text-green-600', sign: '+' }
+      : { colorClass: 'text-gray-600', sign: '' };
   };
 
-  // Function to get the status color
   const getStatusTextColor = (status) => {
-    if (status === 'approved') return 'text-green-600'; // Green for approved
-    if (status === 'denied') return 'text-red-600'; // Red for denied
-    return 'text-gray-600'; // Gray for pending
+    return status === 'approved' ? 'text-green-600' : status === 'denied' ? 'text-red-600' : 'text-gray-600';
   };
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
-      {/* User Profile Information */}
       {userProfile ? (
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Welcome back, {userProfile.name}!</h1>
@@ -124,14 +92,12 @@ const Transactions = () => {
         <p>No profile information available.</p>
       )}
 
-      {/* Transaction History */}
       <div className="bg-white shadow-md rounded-lg p-6">
         <div className="border-b pb-4 mb-4 flex items-center">
           <Clock className="mr-2" />
           <h2 className="text-xl font-semibold">Transaction History</h2>
         </div>
 
-        {/* Display transactions or a message if no payments */}
         {transactions.length > 0 ? (
           <div className="overflow-y-auto h-[400px] pr-4">
             {transactions.map(transaction => {
@@ -151,7 +117,6 @@ const Transactions = () => {
                       </span>
                     </div>
                   </div>
-                  {/* Bin icon for deleting transaction */}
                   {transaction.status === 'pending' && (
                     <div className="flex items-center">
                       <button
@@ -171,7 +136,6 @@ const Transactions = () => {
         )}
       </div>
 
-      {/* Payment Button */}
       <div className="flex justify-center">
         <button 
           onClick={handlePayment}
