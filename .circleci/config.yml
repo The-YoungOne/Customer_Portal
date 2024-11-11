@@ -25,7 +25,8 @@ sonar-scanner \
   -Dsonar.login="$SONAR_TOKEN" \
   -Dsonar.branch.name="$SONAR_BRANCH" \
   -Dsonar.sources="." \
-  -Dsonar.exclusions="**/*.java"
+  -Dsonar.exclusions="**/*.java, node_modules/**, build/**, dist/**, public/**"
+
 
 
   test-node:
