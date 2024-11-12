@@ -2,21 +2,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import App from './App';
-import { AuthProvider } from './context/AuthContext';
-
-// Create a mock of the App component
-const MockApp = () => {
-  return (
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  );
-};
+import App from './App'; // Import your actual App component
 
 describe('App Component', () => {
   test('renders without crashing', () => {
-    render(<MockApp />);
+    render(<App />); // Directly render the App component
     // Test for something you know exists in your App component
     expect(document.body).toBeInTheDocument();
   });
