@@ -1,14 +1,12 @@
+// setupTests.js
 import '@testing-library/jest-dom';
 import 'jest-canvas-mock';
-// Remove this line if you couldn't install the package
-// import 'jest-intersection-observer';
 
-// Manually mock IntersectionObserver if not using the package
+// Mock IntersectionObserver if you haven't already
 if (!global.IntersectionObserver) {
   class IntersectionObserverMock {
-    constructor(callback, options) {
+    constructor(callback) {
       this.callback = callback;
-      this.options = options;
     }
     observe(element) {
       this.callback([{ isIntersecting: true, target: element }]);
@@ -19,25 +17,13 @@ if (!global.IntersectionObserver) {
   global.IntersectionObserver = IntersectionObserverMock;
 }
 
-// Ensure window is defined
-if (typeof window === 'undefined') {
-  global.window = {};
-}
-
-// Mock window.matchMedia
+// Mock matchMedia
 if (!window.matchMedia) {
-  window.matchMedia = function () {
-    return {
-      matches: false,
-      media: '',
-      onchange: null,
-      addListener: jest.fn(), // Deprecated
-      removeListener: jest.fn(), // Deprecated
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-    };
-  };
+  window.matchMedia = () => ({
+    matches: false,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+  });
 }
 
 // Mock localStorage
@@ -48,7 +34,7 @@ global.localStorage = {
   removeItem: jest.fn(),
 };
 
-// Suppress console errors during tests
+// Suppress act warnings
 const originalError = console.error;
 beforeAll(() => {
   console.error = (...args) => {
@@ -63,23 +49,7 @@ afterAll(() => {
   console.error = originalError;
 });
 
-// Mock fetch
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({}),
-  })
-);
-
 // Reset all mocks before each test
 beforeEach(() => {
   jest.clearAllMocks();
-});
-
-// Mock getContext for Canvas if necessary
-HTMLCanvasElement.prototype.getContext = jest.fn(() => {
-  return {
-    fillRect: jest.fn(),
-    clearRect: jest.fn(),
-    // ... other methods as needed
-  };
 });
