@@ -13,7 +13,7 @@ executors:
 jobs:
   sonarqube:
     executor: sonar-docker
-    working_directory: ~/project/Customer_portal/Customer_portal/frontend  # Updated path
+    working_directory: ~/project/Customer_portal/Customer_portal/frontend # Updated path
     steps:
       # Remove the find . command if it is unnecessary
       - attach_workspace:
@@ -34,7 +34,7 @@ jobs:
   test-node:
     # Install node dependencies and run tests
     executor: node/default
-    working_directory: ~/project/Customer_portal/Customer_portal/frontend   # Updated path
+    working_directory: ~/project/Customer_portal/Customer_portal/frontend # Updated path
     steps:
       - checkout:
           path: ~/project
@@ -47,7 +47,7 @@ jobs:
   build-node:
     # Build node project
     executor: node/default
-    working_directory: ~/project/Customer_portal/Customer_portal/frontend   # Updated path
+    working_directory: ~/project/Customer_portal/Customer_portal/frontend # Updated path
     steps:
       - checkout:
           path: ~/project
@@ -73,4 +73,4 @@ workflows:
       - sonarqube
       - build-node:
           requires:
-            - test-node
+            - test-node
