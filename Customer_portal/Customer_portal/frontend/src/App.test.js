@@ -5,6 +5,7 @@ import '@testing-library/jest-dom';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 
+// Create a mock of the App component
 const MockApp = () => {
   return (
     <AuthProvider>
