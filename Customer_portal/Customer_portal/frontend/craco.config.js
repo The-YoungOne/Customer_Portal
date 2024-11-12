@@ -2,9 +2,11 @@
 const path = require('path');
 
 module.exports = {
+  // Configure Babel
   babel: {
     plugins: ['@babel/plugin-proposal-private-property-in-object'],
   },
+  // Configure Webpack
   webpack: {
     alias: {},
     configure: (webpackConfig) => {
@@ -20,6 +22,7 @@ module.exports = {
       return webpackConfig;
     },
   },
+  // Configure Jest
   jest: {
     configure: {
       transformIgnorePatterns: ['/node_modules/(?!(axios)/)'],
