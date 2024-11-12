@@ -10,7 +10,7 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [submitStatus, setSubmitStatus] = useState('');
-  const [showForm, setShowForm] = useState(false); // State to control form visibility
+  const [showForm, setShowForm] = useState(false);
 
   // Fetch all admins from the backend
   useEffect(() => {
@@ -42,11 +42,11 @@ const AdminDashboard = () => {
     }
     try {
       setIsLoading(true);
-      const response = await api.post('/api/user/admins', newAdmin); // Using api.post
+      const response = await api.post('/api/user/admins', newAdmin);
       setAdmins([...admins, response.data.admin]);
       setNewAdmin({ name: '', idNumber: '', username: '', accountNumber: '', password: '' });
       setSubmitStatus('Admin added successfully.');
-      setShowForm(false); // Hide form after adding an admin
+      setShowForm(false);
     } catch (error) {
       setError('Failed to add admin. Please try again.');
     } finally {
@@ -58,7 +58,7 @@ const AdminDashboard = () => {
   const handleEditAdmin = async () => {
     try {
       setIsLoading(true);
-      const response = await api.put(`/api/user/admins/${editAdminId}`, newAdmin); // Using api.put
+      const response = await api.put(`/api/user/admins/${editAdminId}`, newAdmin);
       setAdmins(
         admins.map((admin) =>
           admin._id === editAdminId ? { ...admin, ...response.data.admin } : admin
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
       setSubmitStatus('Admin updated successfully.');
       setIsEditing(false);
       setEditAdminId(null);
-      setShowForm(false); // Hide form after updating
+      setShowForm(false);
     } catch (error) {
       setError('Failed to update admin. Please try again.');
     } finally {
@@ -81,14 +81,14 @@ const AdminDashboard = () => {
     setNewAdmin(admin);
     setIsEditing(true);
     setEditAdminId(admin._id);
-    setShowForm(true); // Show form when editing
+    setShowForm(true);
   };
 
   // Delete an admin
   const handleDeleteAdmin = async (adminId) => {
     try {
       setIsLoading(true);
-      await api.delete(`/api/user/admins/${adminId}`); // Using api.delete
+      await api.delete(`/api/user/admins/${adminId}`);
       setAdmins(admins.filter((admin) => admin._id !== adminId));
       setSubmitStatus('Admin deleted successfully.');
     } catch (error) {
@@ -104,9 +104,9 @@ const AdminDashboard = () => {
         <h1 className="text-2xl font-bold">Administrator Management</h1>
         <button
           onClick={() => {
-            setIsEditing(false); // Ensure it's not editing mode
-            setNewAdmin({ name: '', idNumber: '', username: '', accountNumber: '', password: '' }); // Reset form fields
-            setShowForm(true); // Show form when adding
+            setIsEditing(false);
+            setNewAdmin({ name: '', idNumber: '', username: '', accountNumber: '', password: '' });
+            setShowForm(true);
           }}
           className="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors"
         >
@@ -114,6 +114,9 @@ const AdminDashboard = () => {
           Add Admin
         </button>
       </div>
+
+      {/* Loading Indicator */}
+      {isLoading && <div className="text-blue-500 mb-4">Loading...</div>}
 
       {error && <div className="text-red-500 mb-4">{error}</div>}
       {submitStatus && <div className="text-green-500 mb-4">{submitStatus}</div>}

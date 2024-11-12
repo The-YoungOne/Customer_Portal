@@ -5,7 +5,7 @@ import api from '../api'; // Import the custom axios instance
 const Payment = () => {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('ZAR');
-  const [convertedAmount, setConvertedAmount] = useState('');
+  const [ setConvertedAmount] = useState('');
   const [exchangeRates, setExchangeRates] = useState({});
   const [beneficiaryName, setBeneficiaryName] = useState('');
   const [paymentReference, setPaymentReference] = useState('');
