@@ -10,9 +10,13 @@ module.exports = {
       ['@babel/plugin-proposal-private-methods', { loose: true }],
       ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
     ],
+    presets: [
+      ['@babel/preset-env', { targets: { node: 'current' } }],
+      '@babel/preset-react'
+    ],
   },
   
-  // 2. Configure Webpack
+  // 2. Configure Webpack (unchanged)
   webpack: {
     alias: {},
     configure: (webpackConfig) => {
@@ -29,12 +33,22 @@ module.exports = {
     },
   },
   
-  // 3. Configure Jest
+  // 3. Updated Jest Configuration
   jest: {
     configure: {
-      transformIgnorePatterns: ['/node_modules/(?!(axios)/)'],
+      moduleNameMapper: {
+        '^axios$': require.resolve('axios'),
+      },
+      transformIgnorePatterns: [
+        '/node_modules/(?!(axios)/)'
+      ],
       transform: {
-        '^.+\\.jsx?$': 'babel-jest',
+        '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', {
+          presets: [
+            ['@babel/preset-env', { targets: { node: 'current' } }],
+            '@babel/preset-react'
+          ],
+        }],
       },
       setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
       testMatch: [
@@ -42,6 +56,7 @@ module.exports = {
         '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
       ],
       moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
+      testEnvironment: 'jsdom',
     },
   },
 };
