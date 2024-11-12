@@ -1,5 +1,4 @@
-# This config was automatically generated from your source code
-# Stacks detected: deps:node:frontend
+# .circleci/config.yml
 version: 2.1
 
 orbs:
@@ -13,11 +12,10 @@ executors:
 jobs:
   sonarqube:
     executor: sonar-docker
-    working_directory: ~/project/Customer_portal/Customer_portal/frontend  # Adjusted path
+    working_directory: ~/project/Customer_portal/Customer_portal/frontend
     steps:
-      # Remove the find . command if it is unnecessary
-      - attach_workspace:
-          at: ~/workspace
+      - checkout:
+          path: ~/project
       - run: |
           SONAR_BRANCH="${CIRCLE_BRANCH:-main}"
           echo "Sonar branch value is: $SONAR_BRANCH"
@@ -41,12 +39,11 @@ jobs:
           pkg-manager: npm
       - run:
           name: Run tests
-          command: npm test --passWithNoTests
+          command: npm test
 
   build-node:
-    # Build node project
     executor: node/default
-    working_directory: ~/project/Customer_portal/Customer_portal/frontend  # Adjusted path
+    working_directory: ~/project/Customer_portal/Customer_portal/frontend
     steps:
       - checkout:
           path: ~/project
@@ -57,7 +54,6 @@ jobs:
       - run:
           name: Create the ~/artifacts directory if it doesn't exist
           command: mkdir -p ~/artifacts
-      # Copy output to artifacts dir
       - run:
           name: Copy artifacts
           command: cp -R build dist public .output .next .docusaurus ~/artifacts 2>/dev/null || true
@@ -69,7 +65,9 @@ workflows:
   build-and-test:
     jobs:
       - test-node
-      - sonarqube
+      - sonarqube:
+          requires:
+            - test-node
       - build-node:
           requires:
             - test-node

@@ -33,6 +33,15 @@ module.exports = {
   jest: {
     configure: {
       transformIgnorePatterns: ['/node_modules/(?!(axios)/)'],
+      transform: {
+        '^.+\\.jsx?$': 'babel-jest',
+      },
+      setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
+      testMatch: [
+        '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
+        '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
+      ],
+      moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
     },
   },
 };
