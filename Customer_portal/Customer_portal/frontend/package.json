@@ -58,6 +58,7 @@
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
     "https-browserify": "^1.0.0",
+    "jest-canvas-mock": "^2.5.2",
     "postcss": "^8.4.47",
     "postcss-loader": "^8.1.1",
     "style-loader": "^4.0.0",
