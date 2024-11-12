@@ -32,9 +32,8 @@ jobs:
             -Dsonar.sources="."
 
   test-node:
-    # Install node dependencies and run tests
     executor: node/default
-    working_directory: ~/project/Customer_portal/Customer_portal/frontend  # Adjusted path
+    working_directory: ~/project/Customer_portal/Customer_portal/frontend
     steps:
       - checkout:
           path: ~/project
