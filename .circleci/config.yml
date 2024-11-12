@@ -1,3 +1,4 @@
+# .circleci/config.yml
 version: 2.1
 
 orbs:
@@ -11,7 +12,7 @@ executors:
 jobs:
   sonarqube:
     executor: sonar-docker
-    working_directory: ~/project/Customer_portal/Customer_portal/frontend  # Adjusted path
+    working_directory: ~/project/Customer_portal/Customer_portal/frontend
     steps:
       - checkout:
           path: ~/project
@@ -42,7 +43,7 @@ jobs:
 
   build-node:
     executor: node/default
-    working_directory: ~/project/Customer_portal/Customer_portal/frontend  # Adjusted path
+    working_directory: ~/project/Customer_portal/Customer_portal/frontend
     steps:
       - checkout:
           path: ~/project
