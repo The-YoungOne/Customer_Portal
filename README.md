@@ -27,14 +27,15 @@ Click the link to view a video demonstration of the application:
     - [6. Customer Transaction History](#6-customer-transaction-history)
     - [7. Admin Management](#7-admin-management)
     - [8. Currency Converter API](#8-currency-converter-api)
+    - [9. Employee Verification System](#9-employee-verification-system)
 6. [Upcoming Features](#upcoming-features)
 7. [API Endpoints](#api-endpoints)
     - [User Authentication](#user-authentication)
     - [Transaction Routes](#transaction-routes)
     - [Admin Routes](#admin-routes)
-    - [Currency Converter API](#currency-converter-api-endpoints)
-8. [Testing the API](#testing-the-api)
-9. [Seeding Default Admin](#seeding-default-admin)
+    - [Currency Converter API Endpoints](#currency-converter-api-endpoints)
+8. [Seeding Default Admin](#seeding-default-admin)
+9. [Testing the API](#testing-the-api)
 10. [Known Issues](#known-issues)
 11. [References](#references)
 12. [License](#license)
@@ -52,6 +53,7 @@ The **International Payment System** is designed for a fictional international b
 - **Bank employees** can access a protected portal to verify and forward payments through SWIFT.
 - **Admins** can manage other admin accounts and authorize payments.
 - **Currency Conversion** functionality to assist users in making informed payment decisions.
+- **Employee Verification System** to ensure the accuracy and legitimacy of transactions before processing.
 
 ---
 
@@ -76,6 +78,7 @@ Before setting up the project, ensure you have the following installed on your m
 - **mkcert** for generating local SSL certificates - [mkcert GitHub](https://github.com/FiloSottile/mkcert)
 - **Postman** or **cURL** for API testing - [Postman](https://www.postman.com/)
 - **Axios** for making HTTP requests in the frontend - [Axios Documentation](https://axios-http.com/)
+- **Chocolatey** (for Windows users to install mkcert) - [Chocolatey Installation](https://chocolatey.org/install)
 
 ### **Clone the Repository**
 
@@ -374,6 +377,66 @@ Secure communication is essential for handling sensitive financial data. Follow 
   - Automatic fetching and updating of exchange rates.
   - Display of converted amounts during payment processing.
 
+### **9. Employee Verification System**
+
+- **Functionality:**
+  - Provides a dashboard for bank employees to verify SWIFT codes and account information before forwarding payments to SWIFT.
+  - Employees can mark payments as "Verified" and submit them for processing.
+  
+- **Features:**
+  - **Verification Dashboard:**
+    - Displays a list of pending transactions awaiting verification.
+    - Detailed view of each transaction, including recipient details and SWIFT codes.
+  
+  - **Verification Process:**
+    1. Employee selects a transaction from the pending list.
+    2. Reviews the SWIFT code and account information for accuracy.
+    3. Marks the transaction as "Verified" or "Rejected" based on validation.
+    4. Verified transactions are forwarded to SWIFT for processing.
+  
+  - **Notifications:**
+    - Upon verification, both the employee and the customer receive notifications about the transaction status.
+  
+  - **Audit Trail:**
+    - Maintains a history of all verifications performed by employees for accountability and auditing purposes.
+  
+- **Process Flow:**
+  1. **Transaction Submission:**
+     - A customer submits an international payment request.
+  
+  2. **Pending Verification:**
+     - The transaction enters a pending state, visible on the Employee Dashboard.
+  
+  3. **Verification:**
+     - An employee reviews the transaction details, including SWIFT code and account information.
+  
+  4. **Approval or Rejection:**
+     - If the transaction is valid, the employee marks it as "Verified" and forwards it to SWIFT.
+     - If invalid, the employee can reject the transaction, prompting the customer to rectify the details.
+  
+  5. **Processing:**
+     - Verified transactions are processed through SWIFT, and the customer is notified of the successful payment.
+
+- **Security Measures:**
+  - **Role-Based Access Control (RBAC):**
+    - Ensures that only authorized employees can access the verification dashboard and perform actions.
+  
+  - **Data Encryption:**
+    - Sensitive information, such as account numbers and SWIFT codes, is encrypted both in transit and at rest.
+  
+  - **Audit Logs:**
+    - Every verification action is logged with timestamps and employee identifiers to maintain a secure audit trail.
+
+- **User Interface:**
+  - **Intuitive Design:**
+    - User-friendly interface allowing employees to navigate and perform verification tasks efficiently.
+  
+  - **Responsive Layout:**
+    - Ensures that the dashboard is accessible and functional across various devices and screen sizes.
+  
+  - **Real-Time Updates:**
+    - Utilizes WebSockets or similar technologies to provide real-time updates on transaction statuses without requiring page reloads.
+
 ---
 
 ## **Upcoming Features**
@@ -381,7 +444,7 @@ Secure communication is essential for handling sensitive financial data. Follow 
 ### **Task 3 - Next Developments**
 
 1. **Employee Verification System**
-   - Develop a dashboard for bank employees to verify SWIFT codes and account information before forwarding to SWIFT.
+   - *Already Implemented:* Develop a dashboard for bank employees to verify SWIFT codes and account information before forwarding to SWIFT.
    - Add the ability for employees to mark payments as "Verified" and submit them.
    
 2. **Notification System**
@@ -540,47 +603,6 @@ Secure communication is essential for handling sensitive financial data. Follow 
 
 ---
 
-## **Testing the API**
-
-Testing is crucial to ensure the reliability and security of the API endpoints. Utilize tools like **Postman** or **cURL** for this purpose.
-
-### **Using Postman**
-
-1. **Import API Collection:**
-   - Create a new collection in Postman and add the endpoints as per the [API Endpoints](#api-endpoints) section.
-
-2. **Set Up Environment Variables:**
-   - Define variables for `baseURL`, `token`, etc., to streamline requests.
-
-3. **Test Scenarios:**
-   - **Registration:** Test user registration with valid and invalid data.
-   - **Login:** Verify login functionality and JWT token retrieval.
-   - **Protected Routes:** Access protected routes using valid and invalid tokens.
-   - **Transactions:** Create and retrieve transactions.
-   - **Admin Management:** Add and remove admins (requires admin token).
-   - **Currency Conversion:** Test currency conversion with various parameters.
-
-### **Using cURL**
-
-**Example: Testing User Login**
-
-```bash
-curl -X POST https://localhost:5000/api/user/login \
-  -H "Content-Type: application/json" \
-  -d '{"idNumber": "123456789", "password": "password123"}'
-```
-
-**Example: Creating a Transaction**
-
-```bash
-curl -X POST https://localhost:5000/api/transactions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your_jwt_token" \
-  -d '{"recipientAccount": "987654321", "swiftCode": "ABCDEF12", "amount": 1000, "currency": "USD"}'
-```
-
----
-
 ## **Seeding Default Admin**
 
 To facilitate initial administrative access, a default admin account is seeded into the database. This ensures that administrative functionalities are accessible upon initial setup.
@@ -662,6 +684,57 @@ seedDefaultAdmin();
 
 ---
 
+## **Testing the API**
+
+Testing is crucial to ensure the reliability and security of the API endpoints. Utilize tools like **Postman** or **cURL** for this purpose.
+
+### **Using Postman**
+
+1. **Import API Collection:**
+   - Create a new collection in Postman and add the endpoints as per the [API Endpoints](#api-endpoints) section.
+
+2. **Set Up Environment Variables:**
+   - Define variables for `baseURL`, `token`, etc., to streamline requests.
+
+3. **Test Scenarios:**
+   - **Registration:** Test user registration with valid and invalid data.
+   - **Login:** Verify login functionality and JWT token retrieval.
+   - **Protected Routes:** Access protected routes using valid and invalid tokens.
+   - **Transactions:** Create and retrieve transactions.
+   - **Admin Management:** Add and remove admins (requires admin token).
+   - **Currency Conversion:** Test currency conversion with various parameters.
+   - **Employee Verification:** Verify transactions using employee credentials.
+
+### **Using cURL**
+
+**Example: Testing User Login**
+
+```bash
+curl -X POST https://localhost:5000/api/user/login \
+  -H "Content-Type: application/json" \
+  -d '{"idNumber": "123456789", "password": "password123"}'
+```
+
+**Example: Creating a Transaction**
+
+```bash
+curl -X POST https://localhost:5000/api/transactions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your_jwt_token" \
+  -d '{"recipientAccount": "987654321", "swiftCode": "ABCDEF12", "amount": 1000, "currency": "USD"}'
+```
+
+**Example: Verifying a Transaction (Employee Action)**
+
+```bash
+curl -X POST https://localhost:5000/api/transactions/verify \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer employee_jwt_token" \
+  -d '{"transactionId": "transaction_id_here", "status": "Verified"}'
+```
+
+---
+
 ## **Known Issues**
 
 - **SSL Certificate Trust Issues:**
@@ -677,6 +750,12 @@ seedDefaultAdmin();
 
 - **Environment Variables Exposure:**
   - Sensitive information is stored in `.env` files. Ensure that these files are excluded from version control systems like Git by adding them to `.gitignore`.
+
+- **Transaction Reconciliation:**
+  - Implement automated reconciliation processes to match internal transactions with SWIFT records to ensure consistency and detect discrepancies.
+
+- **Scalability Concerns:**
+  - As the number of users and transactions grows, ensure that the system scales appropriately. Consider implementing load balancing and database optimization techniques.
 
 ---
 
@@ -695,6 +774,10 @@ seedDefaultAdmin();
 11. **ExchangeRate-API:** [https://www.exchangerate-api.com/](https://www.exchangerate-api.com/)
 12. **Postman Learning Center:** [https://learning.postman.com/](https://learning.postman.com/)
 13. **cURL Documentation:** [https://curl.se/docs/](https://curl.se/docs/)
+14. **SWIFT Official Documentation:** [https://www.swift.com/](https://www.swift.com/)
+15. **Role-Based Access Control (RBAC):** [https://auth0.com/docs/authorization/rbac](https://auth0.com/docs/authorization/rbac)
+16. **WebSockets Documentation:** [https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+17. **Two-Factor Authentication (2FA) Best Practices:** [https://www.twilio.com/docs/authy/best-practices](https://www.twilio.com/docs/authy/best-practices)
 
 ---
 
