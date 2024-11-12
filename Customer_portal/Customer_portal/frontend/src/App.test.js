@@ -1,13 +1,10 @@
 // src/App.test.js
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import App from './App'; // Import your actual App component
+import App from './App';
 
-describe('App Component', () => {
-  test('renders without crashing', () => {
-    render(<App />); // Directly render the App component
-    // Test for something you know exists in your App component
-    expect(document.body).toBeInTheDocument();
-  });
+test('renders the HomePage component', () => {
+  render(<App />);
+  const appElement = screen.getByText(/International Payment System/i);
+  expect(appElement).toBeInTheDocument();
 });

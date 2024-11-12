@@ -44,7 +44,7 @@ const sslOptions = {
 
 // Start the HTTPS server with error handling on port 5000
 try {
-  const PORT = process.env.PORT || 5000;  // Set HTTPS to use port 5000
+  const PORT = process.env.PORT || 5001;  // Set HTTPS to use port 5000
   https.createServer(sslOptions, app).listen(PORT, () => {
     console.log(`Secure HTTPS server running on port ${PORT}`);
   });
